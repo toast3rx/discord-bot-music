@@ -1,3 +1,18 @@
+#Copyright 2021, 2021 Mihai Latea
+
+# This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #!./.venv/bin/python
 
 import discord      # base discord module
@@ -7,6 +22,7 @@ import inspect      # call stack inspection
 import random       # dumb random number generator
 import youtube_dl
 import os
+import argparse
 
 from discord.ext import commands    # Bot class and utils
 
@@ -57,6 +73,9 @@ def log_msg(msg: str, level: str):
 
 # bot instantiation
 bot = commands.Bot(command_prefix='!')
+parser = argparse.ArgumentParser()
+parser.add_argument("--token", help = "Use the specified token")
+args = parser.parse_args()
 
 # on_ready - called after connection to server is established
 @bot.event
@@ -135,8 +154,11 @@ async def on_voice_state_update(ctx, before, after):
 if __name__ == '__main__':
     # check that token exists in environment
     if 'BOT_TOKEN' not in os.environ:
-        log_msg('save your token in the BOT_TOKEN env variable!', 'error')
-        exit(-1)
-
-    # launch bot (blocking operation)
-    bot.run(os.environ['BOT_TOKEN'])
+        if(args.token):
+            bot.run(args.token)
+        else:
+             log_msg('Please specify a token!', 'error')
+             exit(-1)
+    else:
+         # launch bot (blocking operation)
+         bot.run(os.environ['BOT_TOKEN'])
